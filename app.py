@@ -10,7 +10,7 @@ from config.app_config import APP_PREFIX
 from config.mongodb import MONGO_DB_NAME
 from config.logger import configure_logger
 
-from resources.meters_resource import MetersResource
+from resources.meters_resource import MetersResource, MeterResourceData
 from resources.meter_switches_resource import MeterSwitchesResource, MeterSwitchesListResource
 
 app = Flask(APP_NAME)
@@ -25,6 +25,7 @@ app.config['MONGO_DBNAME'] = MONGO_DB_NAME
 configure_logger(app)
 
 api.add_resource(MetersResource, '/meters')
+api.add_resource(MeterResourceData, '/meters/meterConsumption')
 api.add_resource(MeterSwitchesResource, '/meter_switches')
 api.add_resource(MeterSwitchesListResource, '/meter_switches/list')
 
@@ -37,5 +38,5 @@ def hello_world():
 
 if __name__ == '__main__':
     app.logger.info("Starting Python Server Services...")
-    app.run(host='https://secret-inlet-47836.herokuapp.com/')
+    app.run(host='0.0.0.0')
     app.logger.info("Started")

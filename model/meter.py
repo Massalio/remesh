@@ -7,6 +7,23 @@ from config.mongodb import db
 from model.db.meterVO import MeterVO
 
 class Meter:
+    @staticmethod
+    def get(meterConsumption):
+        
+        meterDBResponse=list()
+
+        for i in range(0,len(meterConsumption)):
+            meterDBResponse.append(list(db.meters.find({'ID': meterConsumption[i]}).limit(1)))
+
+        meterResponse = {
+            "meter": []
+        }
+
+        for i in range(0,len(meterConsumption)):
+            for meter in meterDBResponse[i]:
+                meterResponse["meter"].append(Meter._decodeMeter(meter))
+                
+        return meterResponse
 
     @staticmethod
     def create(meterID, meterValue):
@@ -22,19 +39,36 @@ class Meter:
 
         #Para empezar
         #consumption = 0
+        dbResponse = db.meters.find_one({'ID': meterID})
 
-        newMeterDatapoint = MeterVO(DBID, meterID, meterValue, consumption, timestamp)
-        encodedMeter = Meter._encodeMeter(newMeterDatapoint)
-        db.meters.insert_one(encodedMeter)
-        response = {
-            "meter": {
-                "DBID": encodedMeter["DBID"],
-                "ID": encodedMeter["ID"],
-                "value": encodedMeter["value"],
-                "consumption": encodedMeter["consumption"],
-                "timestamp": encodedMeter["timestamp"]
+        if dbResponse is None:
+            newMeterDatapoint = MeterVO(DBID, meterID, meterValue, consumption, timestamp)
+            encodedMeter = Meter._encodeMeter(newMeterDatapoint)
+            db.meters.insert_one(encodedMeter)
+
+            response = {
+                "meter": {
+                    "DBID": encodedMeter["DBID"],
+                    "ID": encodedMeter["ID"],
+                    "value": encodedMeter["value"],
+                    "consumption": encodedMeter["consumption"],
+                    "timestamp": encodedMeter["timestamp"]
+                }
             }
-        }
+        else:
+            update_fields = {
+                "value": meterValue
+            }
+
+            response = {
+                "meter": None
+            }
+            result = db.meters.find_one_and_update({"ID": meterID}, {'$set': update_fields},
+                                                  return_document=ReturnDocument.AFTER)
+
+            if result is not None:
+                response["meter"] = Meter._decodeMeter(result)
+
         return response
 
     @staticmethod

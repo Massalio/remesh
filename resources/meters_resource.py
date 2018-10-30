@@ -7,6 +7,7 @@ from resources.error_handler import ErrorHandler
 
 from model.meter import Meter
 
+
 class MetersResource(Resource):
 
     def post(self):
@@ -22,7 +23,20 @@ class MetersResource(Resource):
             error = "Unable to handle MetersResource POST Request"
             current_app.logger.error("Python Server Response: 500 - %s", error)
             return ErrorHandler.create_error_response(500, error)
+class MeterResourceData(Resource):
 
+    def post(self):
+        try:
+            current_app.logger.info("Received MeterResourceData POST Request")
+            meterData = json.loads(request.data)
 
+            meterResponse = Meter.get(meterData["meterConsumption"])
+
+            current_app.logger.debug("Python Server Response: 200 - %s", meterResponse)
+            return make_response(jsonify(meterResponse), 200)
+        except ValueError:
+            error = "Unable to handle CategoriesResource GET Request"
+            current_app.logger.error("Python Server Response: 500 - %s", error)
+            return ErrorHandler.create_error_response(500, error)
 
 

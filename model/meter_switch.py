@@ -23,6 +23,7 @@ class MeterSwitch:
 
     @staticmethod
     def create(meterSwitchID, meterSwitchValue):
+        
         dbResponse = db.meter_switches.find_one({'ID': meterSwitchID})
 
         if dbResponse is None:
