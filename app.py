@@ -33,10 +33,10 @@ app.register_blueprint(api_bp)
 
 @app.route('/')
 def hello_world():
-    return "REMESH online baby"
+    return "REMESH online"
 
 
 if __name__ == '__main__':
     app.logger.info("Starting Python Server Services...")
-    app.run(host='rocky-headland-53719.herokuapp.com')
+    app.run(host='0.0.0.0')
     app.logger.info("Started")
