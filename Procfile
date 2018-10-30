@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn -w 4 -b rocky-headland-53719.herokuapp.com:$PORT app:app --log-level=debug
