@@ -38,5 +38,5 @@ def hello_world():
 
 if __name__ == '__main__':
     app.logger.info("Starting Python Server Services...")
-    app.run(host='rocky-headland-53719.herokuapp.com')
+    app.run(host='0.0.0.0')
     app.logger.info("Started")
