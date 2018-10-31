@@ -1,8 +1,8 @@
 import os
 from pymongo import MongoClient
 
-mongo_uri = "mongodb://lioneldagnino@gmail.com:chori?dame20@rocky-headland-53719.herokuapp.com:8000/lio_server"
-#mongo_uri = "mongodb://localhost:27017"
+#mongo_uri = "mongodb://rocky-headland-53719.herokuapp.com:8000"
+mongo_uri = "mongodb://localhost:27017"
 if "MONGO_URL" in os.environ:
     mongo_uri = os.environ['MONGO_URL'] + ":" + os.environ['MONGO_PORT']
 

@@ -1,8 +1,8 @@
 FROM python:3.6
 
-ADD . /lio-server
+ADD . /lio_server
 
-WORKDIR /lio-server
+WORKDIR /lio_server
 
 EXPOSE 8000
 
