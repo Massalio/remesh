@@ -6,9 +6,9 @@ WORKDIR /lio-server
 
 EXPOSE 8000
 
-ENV MONGO_URL mongodb://gmerino:fili123@ds149309.mlab.com
+ENV MONGO_URL mongodb://lioneldagnino:chori?dame20@ds149593.mlab.com
 
-ENV MONGO_PORT 49309/heroku_vmdrr8pj
+ENV MONGO_PORT 49593/rmm_server
 
 RUN pip install --upgrade pip
 
