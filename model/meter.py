@@ -1,6 +1,6 @@
 import uuid
 import time
-
+import math
 from pymongo import ReturnDocument
 
 from config.mongodb import db
@@ -26,38 +26,53 @@ class Meter:
         return meterResponse
 
     @staticmethod
-    def create(meterID, meterValue):
+    def create(meterID, meterInstantPower, meterPhase):
         DBID = str(uuid.uuid4())
         timestamp = time.time()
         
-        #comentar estas 3 lineas para inicializar
-
-        allDatapoints = list(db.meters.find().sort([("timestamp", -1)]))
-        lastDatapoint = allDatapoints[0]
-
-        consumption = lastDatapoint["consumption"] + ((((lastDatapoint["value"] + meterValue) / 2) * (timestamp - lastDatapoint["timestamp"])) / 3600)
-
-        #Para empezar
-        #consumption = 0
         dbResponse = db.meters.find_one({'ID': meterID})
 
         if dbResponse is None:
-            newMeterDatapoint = MeterVO(DBID, meterID, meterValue, consumption, timestamp)
+            activePower = 0
+            reactivePower = 0
+            aparentPower = 0
+            powerFactor = 0
+            newMeterDatapoint = MeterVO(DBID, meterID, meterInstantPower, timestamp, activePower, reactivePower, aparentPower, meterPhase, powerFactor)
             encodedMeter = Meter._encodeMeter(newMeterDatapoint)
             db.meters.insert_one(encodedMeter)
-
             response = {
                 "meter": {
                     "DBID": encodedMeter["DBID"],
                     "ID": encodedMeter["ID"],
-                    "value": encodedMeter["value"],
-                    "consumption": encodedMeter["consumption"],
-                    "timestamp": encodedMeter["timestamp"]
+                    "instantPower": encodedMeter["instantPower"],
+                    "timestamp": encodedMeter["timestamp"],
+                    "activePower" : encodedMeter["activePower"],
+                    "reactivePower" : encodedMeter["reactivePower"],
+                    "aparentPower" : encodedMeter["aparentPower"],
+                    "phase" : encodedMeter["phase"],
+                    "powerFactor" : encodedMeter["powerFactor"]
                 }
             }
+            
         else:
+
+            allDatapoints = list(db.meters.find({'ID':meterID}).sort([("timestamp", -1)]))
+            lastDatapoint = allDatapoints[0]
+            instantActivePower = meterInstantPower*math.cos(meterPhase*math.pi/180)
+            instantReactivePower = meterInstantPower*math.sin(meterPhase*math.pi/180)
+            activePower = lastDatapoint["activePower"] + ((((lastDatapoint["instantPower"]*math.cos(math.pi*lastDatapoint["phase"]/180) + instantActivePower) / 2) * (timestamp - lastDatapoint["timestamp"])) / 3600)
+            reactivePower = lastDatapoint["reactivePower"] + ((((lastDatapoint["instantPower"]*math.sin(math.pi*lastDatapoint["phase"]/180) + instantReactivePower) / 2) * (timestamp - lastDatapoint["timestamp"])) / 3600)
+            aparentPower = (activePower**2+reactivePower**2)**(1/2)
+            powerFactor = activePower/math.fabs(aparentPower)
             update_fields = {
-                "value": meterValue
+
+                "instantPower": meterInstantPower,
+                "timestamp": timestamp,
+                "activePower" : activePower,
+                "reactivePower" : reactivePower,
+                "aparentPower" : aparentPower,
+                "phase" : meterPhase,
+                "powerFactor" : powerFactor
             }
 
             response = {
@@ -77,9 +92,14 @@ class Meter:
             "_type": "meter",
             "DBID": meter.DBID,
             "ID": meter.ID,
-            "value": meter.value,
-            "consumption": meter.consumption,
-            "timestamp": meter.timestamp
+            "instantPower": meter.instantPower,
+            "timestamp": meter.timestamp,
+            "activePower" : meter.activePower,
+            "reactivePower" : meter.reactivePower,
+            "aparentPower" : meter.aparentPower,
+            "phase" : meter.phase,
+            "powerFactor" : meter.powerFactor
+
         }
 
     @staticmethod
@@ -88,8 +108,12 @@ class Meter:
         meter = {
             "DBID": document["DBID"],
             "ID": document["ID"],
-            "value": document["value"],
-            "consumption": document["consumption"],
-            "timestamp": document["timestamp"]
+            "instantPower": document["instantPower"],
+            "timestamp": document["timestamp"],
+            "activePower": document["activePower"],
+            "reactivePower": document["reactivePower"],
+            "aparentPower": document["aparentPower"],
+            "phase": document["phase"],
+            "powerFactor": document["powerFactor"]
         }
         return meter

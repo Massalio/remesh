@@ -40,7 +40,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/lionel/RMM/env"
+VIRTUAL_ENV="/home/lionel/Dropbox/TP Profesional/TP/Servidor Python/Servidor 1.1/env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

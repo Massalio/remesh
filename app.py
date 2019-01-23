@@ -31,6 +31,8 @@ api.add_resource(MeterSwitchesListResource, '/meter_switches/list')
 
 app.register_blueprint(api_bp)
 
+#mongo.drop_database('MONGO_DB_NAME')
+
 @app.route('/')
 def hello_world():
     return "REMESH online"

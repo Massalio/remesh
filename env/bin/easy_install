@@ -1,5 +1,6 @@
-#!/home/lionel/RMM/env/bin/python3
-
+#!/bin/sh
+'''exec' "/home/lionel/Dropbox/TP Profesional/TP/Servidor Python/Servidor 1.1/env/bin/python3" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys

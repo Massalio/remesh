@@ -6,6 +6,9 @@ if "MONGO_URL" in os.environ:
     mongo_uri = os.environ['MONGO_URL'] + ":" + os.environ['MONGO_PORT']
 
 mongo = MongoClient(mongo_uri)
+
 db = mongo['heroku_2wgm4nnk']
 
+
 MONGO_DB_NAME = "lio_server"
+

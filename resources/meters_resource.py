@@ -15,7 +15,7 @@ class MetersResource(Resource):
             current_app.logger.info("Received MetersResource POST Request")
             meterData = json.loads(request.data)
 
-            createMeterResponse = Meter.create(meterData["ID"], meterData["value"])
+            createMeterResponse = Meter.create(meterData["ID"], meterData["instantPower"], meterData["phase"])
 
             current_app.logger.debug("Python Server Response: 200 - %s", createMeterResponse)
             return make_response(jsonify(createMeterResponse), 200)
